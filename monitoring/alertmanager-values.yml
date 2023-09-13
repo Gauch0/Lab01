@@ -1,0 +1,47 @@
+ global:
+  smtp_smarthost: '${SMTP_HOST}:${SMTP_PORT}'
+  smtp_from: '${SMTP_FROM}'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+
+
+ route:
+  receiver: 'null-receiver'
+  group_by: [ alertname ]
+  group_wait: 1s
+  group_interval: 1s
+  repeat_interval: 4h
+  routes:
+    - match:
+        job: "node-exporter"
+      receiver: discord
+    - match:
+        job: "loki"
+      receiver: discord
+    - match:
+        job: "cadvisor"
+      receiver: discord
+    - match:
+        job: "grafana"
+      receiver: discord
+      
+ receivers:
+    - name: 'compuesto'
+      email_configs:
+        - to: 'testlabs@gmail.com'
+          send_resolved: true
+      discord_configs:
+        - webhook_url: '${DISCORD_WEBHOOK_URL}'
+          send_resolved: true
+
+    - name: 'discord'
+      discord_configs:
+        - webhook_url: '${DISCORD_WEBHOOK_URL}'
+          send_resolved: true
+
+    - name: 'email-notifications'
+      email_configs:
+        - to: '${SMTP_FROM}'
+          send_resolved: true
+
+    - name: 'null-receiver'
