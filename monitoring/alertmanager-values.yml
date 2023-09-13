@@ -28,7 +28,7 @@
  receivers:
     - name: 'compuesto'
       email_configs:
-        - to: 'testlabs@gmail.com'
+        - to: '${SMTP_FROM}'
           send_resolved: true
       discord_configs:
         - webhook_url: '${DISCORD_WEBHOOK_URL}'
