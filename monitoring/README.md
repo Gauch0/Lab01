@@ -6,13 +6,8 @@ This monitoring stack utilizes Prometheus for metric collection, AlertManager fo
 
 ## Prerequisites
 
-1. Ensure you have an `.env` file in the same directory as your `docker-compose.yml`. This file should contain the paths to the configuration files for Prometheus, AlertManager, and Promtail.
+1. Ensure you have an `.env` file in the same directory as your `docker-compose.yml`. This file should contain the paths to the configuration files for Discord Webhook, and SMTP Google.
 
-    
-        PROMETHEUS_CONFIG_PATH=/path/to/prometheus/config
-        ALERTS=/path/to/alerts/config
-        ALERTMANAGER_CONFIG_PATH=/path/to/alertmanager/config
-        PROMTAIL_CONFIG_PATH=/path/to/promtail/config
         
         DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/xxxxxx/yyyyyy
 

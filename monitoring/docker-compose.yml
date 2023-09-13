@@ -6,8 +6,8 @@ services:
     container_name: prometheus
     restart: always
     volumes:
-      - ${PROMETHEUS_CONFIG_PATH}:/etc/prometheus/prometheus-values.yml
-      - ${ALERTS}:/etc/prometheus/alerts.yml
+      - ./prometheus-values:/etc/prometheus/prometheus-values.yml
+      - ./alerts.yml:/etc/prometheus/alerts.yml
     command:
       - '--config.file=/etc/prometheus/prometheus-values.yml'
     env_file:
@@ -41,7 +41,7 @@ services:
     ports:
       - "9093:9093"
     volumes:
-      - ${ALERTMANAGER_CONFIG_PATH}:/etc/alertmanager/alertmanager-values.yml
+      - ./alertmanager-values:/etc/alertmanager/alertmanager-values.yml
     command: --config.file=/etc/alertmanager/alertmanager-values.yml --cluster.advertise-address=0.0.0.0:9093
     env_file:
       - .env
@@ -53,7 +53,7 @@ services:
     container_name: promtail
     volumes:
       - /var/log:/var/log
-      - ${PROMTAIL_CONFIG_PATH}:/etc/promtail/docker-config.yaml
+      - ./promtail-values:/etc/promtail/docker-config.yaml
     command: -config.file=/etc/promtail/docker-config.yaml
     env_file:
       - .env
