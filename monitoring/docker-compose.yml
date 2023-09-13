@@ -4,8 +4,10 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
+    restart: always
     volumes:
-      - ${PROMETHEUS_CONFIG_PATH}:/etc/prometheus/prometheus-values.yml
+      - ./prometheus-values:/etc/prometheus/prometheus-values.yml
+      - ./alerts.yml:/etc/prometheus/alerts.yml
     command:
       - '--config.file=/etc/prometheus/prometheus-values.yml'
     env_file:
@@ -35,12 +37,12 @@ services:
   alertmanager:
     image: prom/alertmanager:latest
     container_name: alertmanager
+    restart: on-failure
     ports:
       - "9093:9093"
     volumes:
-      - ${ALERTMANAGER_CONFIG_PATH}:/etc/alertmanager/alertmanager-values.yml
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager-values.yml'
+      - ./alertmanager-values:/etc/alertmanager/alertmanager-values.yml
+    command: --config.file=/etc/alertmanager/alertmanager-values.yml --cluster.advertise-address=0.0.0.0:9093
     env_file:
       - .env
     networks:
@@ -51,22 +53,31 @@ services:
     container_name: promtail
     volumes:
       - /var/log:/var/log
-      - ${PROMTAIL_CONFIG_PATH}:/etc/promtail/docker-config.yaml
+      - ./promtail-values:/etc/promtail/docker-config.yaml
     command: -config.file=/etc/promtail/docker-config.yaml
     env_file:
       - .env
     networks:
       - monitoreo
   
-  prometheus-discord:
-    image: benjojo/alertmanager-discord
-    container_name: prometheus-discord
-    environment:
-      - DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
-    env_file:
-      - .env
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    devices:
+      - /dev/kmsg
     ports:
-      - 9094:9094 
+      - "8080:8080"
+    networks:
+      - monitoreo
 
   loki:
     image: grafana/loki:latest
@@ -75,16 +86,22 @@ services:
       - 3100:3100
     networks:
       - monitoreo
+    depends_on:
+      - promtail
 
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    restart: always
     ports:
       - 3000:3000
     networks:
       - monitoreo
     environment:
       GF_SECURITY_ADMIN_PASSWORD: test%
+    depends_on:
+      - prometheus
+      - loki
 
 networks:
   monitoreo:
