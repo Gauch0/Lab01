@@ -17,6 +17,19 @@ This monitoring stack utilizes Prometheus for metric collection, AlertManager fo
         ALERTMANAGER_CONFIG_PATH=/path/to/alertmanager/config
         PROMTAIL_CONFIG_PATH=/path/to/promtail/config
 
+        # Discord Webhook for notifications
+        
+        DISCORD_WEBHOOK_URL=  # Example: https://discord.com/api/webhooks/xxxxxx/yyyyyy
+
+        # SMTP settings for email notifications
+        SMTP_HOST=smtp.gmail.com
+        SMTP_PORT=587
+        SMTP_FROM=your-email@gmail.com
+        SMTP_USERNAME=your-email@gmail.com
+        SMTP_PASSWORD=your-password
+
+
+
 ## How to Use
 
 To bring up all services:
